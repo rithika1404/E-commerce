@@ -1,16 +1,9 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
+/**
+ * In-memory data store — shared across all controllers.
+ * Replace with a real DB (MongoDB, PostgreSQL, etc.) in production.
+ */
 
-const app = express();
-const PORT = process.env.PORT || 5000;
-const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000';
-
-app.use(cors({ origin: CORS_ORIGIN }));
-app.use(express.json());
-
-// In-Memory Data Stores
-let products = [
+const products = [
   { id: 1, name: 'Premium Wireless Headphones', price: 299.99, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80', description: 'High-quality noise-canceling wireless headphones.' },
   { id: 2, name: 'Minimalist Smartwatch', price: 199.50, image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80', description: 'Sleek and elegant smartwatch with health tracking.' },
   { id: 3, name: 'Mechanical Keyboard', price: 149.00, image: 'https://images.unsplash.com/photo-1595225476474-87563907a212?w=500&q=80', description: 'RGB mechanical keyboard with tactile switches.' },
@@ -31,129 +24,11 @@ let products = [
   { id: 18, name: '1080p Webcam with Ring Light', price: 69.99, image: 'https://images.unsplash.com/photo-1612444530582-fc66183b16f7?w=500&q=80', description: 'High-definition video webcam with integrated adjustable ring light.' },
 ];
 
-// Pre-seeded demo account
+// Pre-seeded demo account for testing
 let users = [
   { id: 1, name: 'Demo User', email: 'demo@meesho.com', password: 'demo1234' }
 ];
 let carts = { 1: [] }; // Initialize demo user's cart
 let orders = [];
 
-// ========================
-// PRODUCTS API
-// ========================
-app.get('/api/products', (req, res) => {
-  res.json(products);
-});
-
-app.get('/api/products/:id', (req, res) => {
-  const product = products.find(p => p.id === parseInt(req.params.id));
-  if (!product) return res.status(404).json({ error: 'Product not found' });
-  res.json(product);
-});
-
-// ========================
-// USERS API
-// ========================
-app.post('/api/users/register', (req, res) => {
-  const { name, email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
-  
-  if (users.find(u => u.email === email)) {
-    return res.status(400).json({ error: 'User already exists' });
-  }
-
-  const newUser = { id: users.length + 1, name, email, password };
-  users.push(newUser);
-  carts[newUser.id] = []; // Initialize empty cart for user
-  
-  res.status(201).json({ message: 'User created', userId: newUser.id });
-});
-
-app.post('/api/users/login', (req, res) => {
-  const { email, password } = req.body;
-  const user = users.find(u => u.email === email && u.password === password);
-  if (!user) return res.status(401).json({ error: 'Invalid credentials' });
-  
-  res.json({ message: 'Login successful', userId: user.id });
-});
-
-// ========================
-// CART API
-// ========================
-// In a real app, userId would come from a JWT token in the headers. 
-// For this mock, we'll expect it in the query params or body.
-
-app.get('/api/cart/:userId', (req, res) => {
-  const userId = parseInt(req.params.userId);
-  const cart = carts[userId] || [];
-  res.json(cart);
-});
-
-app.post('/api/cart/:userId', (req, res) => {
-  const userId = parseInt(req.params.userId);
-  const { productId, quantity = 1 } = req.body;
-  
-  const product = products.find(p => p.id === productId);
-  if (!product) return res.status(404).json({ error: 'Product not found' });
-
-  if (!carts[userId]) carts[userId] = [];
-  
-  const existingItem = carts[userId].find(item => item.productId === productId);
-  if (existingItem) {
-    existingItem.quantity += quantity;
-  } else {
-    carts[userId].push({ productId, name: product.name, price: product.price, quantity });
-  }
-
-  res.json({ message: 'Item added to cart', cart: carts[userId] });
-});
-
-app.delete('/api/cart/:userId/:productId', (req, res) => {
-  const userId = parseInt(req.params.userId);
-  const productId = parseInt(req.params.productId);
-  
-  if (!carts[userId]) return res.status(404).json({ error: 'Cart not found' });
-
-  carts[userId] = carts[userId].filter(item => item.productId !== productId);
-  res.json({ message: 'Item removed from cart', cart: carts[userId] });
-});
-
-// ========================
-// ORDERS API
-// ========================
-app.get('/api/orders/:userId', (req, res) => {
-  const userId = parseInt(req.params.userId);
-  const userOrders = orders.filter(o => o.userId === userId);
-  res.json(userOrders);
-});
-
-app.post('/api/orders/:userId', (req, res) => {
-  const userId = parseInt(req.params.userId);
-  const cart = carts[userId];
-
-  if (!cart || cart.length === 0) {
-    return res.status(400).json({ error: 'Cannot create order with an empty cart' });
-  }
-
-  const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  
-  const newOrder = {
-    id: orders.length + 1,
-    userId,
-    items: [...cart],
-    total,
-    date: new Date().toISOString(),
-    status: 'Pending'
-  };
-
-  orders.push(newOrder);
-  carts[userId] = []; // Clear the cart after order
-
-  res.status(201).json({ message: 'Order created successfully', order: newOrder });
-});
-
-// Start Server
-app.listen(PORT, () => {
-  console.log(`Backend API server is running on http://localhost:${PORT}`);
-});
-
+module.exports = { products, users, carts, orders };
