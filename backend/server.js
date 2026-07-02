@@ -4,10 +4,24 @@ const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000';
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000,http://localhost:5173';
+const allowedOrigins = CORS_ORIGIN.split(',').map(origin => origin.trim()).filter(Boolean);
 
-app.use(cors({ origin: CORS_ORIGIN }));
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error(`CORS blocked request from ${origin}`));
+  },
+}));
 app.use(express.json());
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
 
 // In-Memory Data Stores
 let products = [
@@ -156,4 +170,3 @@ app.post('/api/orders/:userId', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Backend API server is running on http://localhost:${PORT}`);
 });
-

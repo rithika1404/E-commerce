@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { apiUrl } from '../api';
 
 export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
   const [isLoginTab, setIsLoginTab] = useState(true);
@@ -18,7 +19,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
     try {
       if (isLoginTab) {
         // Login API Call
-        const response = await fetch('/api/users/login', {
+        const response = await fetch(apiUrl('/api/users/login'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
@@ -39,7 +40,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
         onClose();
       } else {
         // Register API Call
-        const response = await fetch('/api/users/register', {
+        const response = await fetch(apiUrl('/api/users/register'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, email, password }),

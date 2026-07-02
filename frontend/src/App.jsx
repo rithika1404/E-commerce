@@ -4,6 +4,7 @@ import CartSidebar from './components/CartSidebar';
 import AuthModal from './components/AuthModal';
 import OrdersModal from './components/OrdersModal';
 import ThemeSwitcher from './components/ThemeSwitcher';
+import { apiUrl } from './api';
 
 const APP_NAME = import.meta.env.VITE_APP_NAME || 'Meesho';
 
@@ -76,7 +77,7 @@ export default function App() {
   const fetchProductsList = async () => {
     try {
       setLoadingProducts(true);
-      const response = await fetch('/api/products');
+      const response = await fetch(apiUrl('/api/products'));
       if (!response.ok) throw new Error('Failed to load products');
       const data = await response.json();
       setProducts(data);
@@ -92,7 +93,7 @@ export default function App() {
   // Sync / fetch cart from backend
   const syncCartWithBackend = async (userId) => {
     try {
-      const response = await fetch(`/api/cart/${userId}`);
+      const response = await fetch(apiUrl(`/api/cart/${userId}`));
       if (response.ok) {
         const data = await response.json();
         setCart(data);
@@ -105,7 +106,7 @@ export default function App() {
   // Fetch orders from backend
   const fetchOrders = async (userId) => {
     try {
-      const response = await fetch(`/api/orders/${userId}`);
+      const response = await fetch(apiUrl(`/api/orders/${userId}`));
       if (response.ok) {
         const data = await response.json();
         setOrders(data);
@@ -127,7 +128,7 @@ export default function App() {
       // Merge guest cart with backend cart
       try {
         for (const item of guestCart) {
-          await fetch(`/api/cart/${userData.userId}`, {
+          await fetch(apiUrl(`/api/cart/${userData.userId}`), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ productId: item.id || item.productId, quantity: item.quantity }),
@@ -158,7 +159,7 @@ export default function App() {
     if (user) {
       // Backend Cart Add
       try {
-        const response = await fetch(`/api/cart/${user.userId}`, {
+        const response = await fetch(apiUrl(`/api/cart/${user.userId}`), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ productId: product.id, quantity: 1 }),
@@ -198,10 +199,10 @@ export default function App() {
       try {
         if (targetQty <= 0) {
           // DELETE
-          await fetch(`/api/cart/${user.userId}/${itemId}`, { method: 'DELETE' });
+          await fetch(apiUrl(`/api/cart/${user.userId}/${itemId}`), { method: 'DELETE' });
         } else {
           // POST delta
-          await fetch(`/api/cart/${user.userId}`, {
+          await fetch(apiUrl(`/api/cart/${user.userId}`), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ productId: itemId, quantity: change }),
@@ -227,7 +228,7 @@ export default function App() {
   const handleRemoveItem = async (itemId) => {
     if (user) {
       try {
-        await fetch(`/api/cart/${user.userId}/${itemId}`, { method: 'DELETE' });
+        await fetch(apiUrl(`/api/cart/${user.userId}/${itemId}`), { method: 'DELETE' });
         syncCartWithBackend(user.userId);
       } catch (err) {
         console.error('Error deleting cart item:', err);
@@ -242,7 +243,7 @@ export default function App() {
   const handleCheckout = async () => {
     if (!user) return;
     try {
-      const response = await fetch(`/api/orders/${user.userId}`, {
+      const response = await fetch(apiUrl(`/api/orders/${user.userId}`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
