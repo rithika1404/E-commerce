@@ -1,0 +1,10 @@
+# Environment variables - NEVER commit these
+.env
+.env.local
+.env.production
+
+# Node modules
+node_modules/
+
+# Build output (Vite)
+dist/
