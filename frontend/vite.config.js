@@ -16,5 +16,23 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+    build: {
+      // Disable automatic modulepreload injection — prevents the mass of
+      // "preloaded but not used" warnings from Vercel's CDN preloading
+      // every Font Awesome webfont chunk that isn't immediately consumed.
+      modulePreload: false,
+      rollupOptions: {
+        output: {
+          // Keep Font Awesome assets in their own chunk so they're only
+          // loaded when actually needed, not eagerly preloaded.
+          manualChunks(id) {
+            if (id.includes('@fortawesome')) {
+              return 'fontawesome';
+            }
+          },
+        },
+      },
+    },
   };
 });
+
