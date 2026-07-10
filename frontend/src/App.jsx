@@ -30,6 +30,40 @@ export default function App() {
   const [isOrdersModalOpen, setIsOrdersModalOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
 
+  // Reviews State
+  const [reviews, setReviews] = useState([
+    { id: 1, name: "Sarah J.", initials: "SJ", verified: true, stars: 5, text: "The quality of these products is unmatched. Customer service was incredibly helpful! My Sony headphones arrived in perfect condition.", product: "Sony WH-1000XM5" },
+    { id: 2, name: "Michael T.", initials: "MT", verified: true, stars: 4, text: "Fast shipping and the smartwatch I ordered looks even better in person. The build quality feels super premium for this price.", product: "Apple Watch Ultra" },
+    { id: 3, name: "Emily R.", initials: "ER", verified: true, stars: 5, text: "I've bought my entire desk setup here — monitor stand, hub, keyboard. The minimalist aesthetic is exactly what I was after!", product: "Desk Accessories Bundle" },
+    { id: 4, name: "Arjun K.", initials: "AK", verified: true, stars: 5, text: "Ordered gaming gear for my setup and could not be happier. The mechanical keyboard has a perfect tactile feel and looks stunning with RGB lighting.", product: "Mechanical Keyboard Pro" },
+    { id: 5, name: "Neha M.", initials: "NM", verified: true, stars: 5, text: "The return process was seamless when I needed a different cable size. Support was responsive and friendly. Will definitely order again!", product: "USB-C Hub" },
+    { id: 6, name: "Rahul S.", initials: "RS", verified: true, stars: 4, text: "Honestly surprised at how good the packaging was. The product came wrapped beautifully — felt like opening a gift. Great first experience!", product: "TWS Earbuds Pro" }
+  ]);
+  const [reviewName, setReviewName] = useState('');
+  const [reviewRating, setReviewRating] = useState('5');
+  const [reviewText, setReviewText] = useState('');
+
+  const handleReviewSubmit = (e) => {
+    e.preventDefault();
+    if (!reviewName.trim() || !reviewText.trim()) return;
+    
+    const newReview = {
+      id: Date.now(),
+      name: reviewName,
+      initials: reviewName.substring(0, 2).toUpperCase(),
+      verified: user !== null, // Verified if logged in
+      stars: parseInt(reviewRating),
+      text: reviewText,
+      product: "Store Purchase"
+    };
+    
+    setReviews([newReview, ...reviews]);
+    setReviewName('');
+    setReviewRating('5');
+    setReviewText('');
+    alert('Thank you! Your review has been submitted.');
+  };
+
   useEffect(() => {
     const savedTheme = localStorage.getItem('aura-selected-theme') || 'sky-purple';
     applyTheme(savedTheme);
@@ -407,6 +441,77 @@ export default function App() {
         </div>
       </header>
 
+      {/* ═══════════════════════════════════════════════
+          OUR STORY SECTION
+          ═══════════════════════════════════════════════ */}
+      <section id="our-story" className="our-story-section">
+        <div className="story-container">
+          <div className="story-image-wrapper">
+            <img src="https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=800&q=80" alt="Our Workspace" className="story-main-img" />
+            <div className="story-floating-badge">
+              <strong>Est. 2024</strong>
+            </div>
+          </div>
+          <div className="story-content">
+            <span className="section-badge"><i className="fa-solid fa-leaf"></i> Our Story</span>
+            <h2>Crafting the Perfect Shopping Experience</h2>
+            <p>
+              At {APP_NAME}, we believe that technology and lifestyle go hand in hand. 
+              Our journey started with a simple idea: to provide a curated selection of premium 
+              products that enhance your daily life without compromising on aesthetics or quality.
+            </p>
+            <p>
+              Every item in our collection is carefully tested and selected. We work directly 
+              with trusted manufacturers to ensure you get the best value, combining innovative 
+              design with reliable performance. Welcome to a better way to shop.
+            </p>
+            <div className="story-stats">
+              <div className="s-stat">
+                <strong>10k+</strong>
+                <span>Orders Delivered</span>
+              </div>
+              <div className="s-stat">
+                <strong>99%</strong>
+                <span>Happy Clients</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          WHY CHOOSE US / FEATURES SECTION
+          ═══════════════════════════════════════════════ */}
+      <section id="features" className="features-section">
+        <div className="section-header">
+          <span className="section-badge"><i className="fa-solid fa-bolt"></i> Why Choose Us</span>
+          <h2>The {APP_NAME} Advantage</h2>
+          <p>We go above and beyond to ensure a flawless experience from click to delivery.</p>
+        </div>
+        <div className="features-grid">
+          <div className="feature-card">
+            <div className="feature-icon"><i className="fa-solid fa-gem"></i></div>
+            <h3>Premium Quality</h3>
+            <p>We source only the highest grade materials. Every product is built to last, providing you with uncompromising quality.</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon"><i className="fa-solid fa-truck-fast"></i></div>
+            <h3>Lightning Delivery</h3>
+            <p>Our optimized logistics network ensures your orders arrive faster. Get free express shipping on all orders over ₹999.</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon"><i className="fa-solid fa-headset"></i></div>
+            <h3>24/7 Priority Support</h3>
+            <p>Our dedicated team is always here for you. Whether you have a question or need help with a return, we've got your back.</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon"><i className="fa-solid fa-leaf"></i></div>
+            <h3>Eco-Friendly</h3>
+            <p>We care about our planet. All our shipments use 100% recyclable materials, minimizing our carbon footprint.</p>
+          </div>
+        </div>
+      </section>
+
       {/* Categories */}
       <section id="categories" className="categories-section">
         <div className="section-header">
@@ -470,6 +575,25 @@ export default function App() {
         </div>
       </section>
 
+      {/* ═══════════════════════════════════════════════
+          FEATURED COLLECTION BANNER
+          ═══════════════════════════════════════════════ */}
+      <section className="featured-banner-section">
+        <div className="featured-banner">
+          <div className="banner-content">
+            <span className="banner-tag">Limited Time</span>
+            <h2>The Ultimate Minimalist Desk Setup</h2>
+            <p>Elevate your workspace with our exclusive bundle. Includes a premium mechanical keyboard, ergonomic mouse, and a large wool felt desk pad.</p>
+            <a href="#shop" className="btn btn-primary banner-btn">
+              Explore Bundle <i className="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+          <div className="banner-image">
+            <img src="https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&q=80" alt="Minimalist Desk Setup" />
+          </div>
+        </div>
+      </section>
+
       {/* Shop / Products */}
       <main id="shop" className="shop-section">
         <div className="section-header">
@@ -529,60 +653,52 @@ export default function App() {
         </div>
 
         <div className="testimonials-grid">
-          <div className="testimonial-card">
-            <div className="testimonial-top">
-              <div className="avatar">SJ</div>
-              <div><strong>Sarah J.</strong><span className="verified-badge"><i className="fa-solid fa-circle-check"></i> Verified</span></div>
-              <div className="stars" style={{ marginLeft: 'auto' }}><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i></div>
+          {reviews.map(review => (
+            <div className="testimonial-card" key={review.id}>
+              <div className="testimonial-top">
+                <div className="avatar">{review.initials}</div>
+                <div>
+                  <strong>{review.name}</strong>
+                  {review.verified && <span className="verified-badge"><i className="fa-solid fa-circle-check"></i> Verified</span>}
+                </div>
+                <div className="stars" style={{ marginLeft: 'auto' }}>
+                  {[...Array(5)].map((_, i) => (
+                    <i key={i} className={i < review.stars ? "fa-solid fa-star" : "fa-regular fa-star"}></i>
+                  ))}
+                </div>
+              </div>
+              <p>"{review.text}"</p>
+              <div className="testimonial-product-tag"><i className="fa-solid fa-bag-shopping"></i> Purchased: {review.product}</div>
             </div>
-            <p>"The quality of these products is unmatched. Customer service was incredibly helpful! My Sony headphones arrived in perfect condition."</p>
-            <div className="testimonial-product-tag"><i className="fa-solid fa-bag-shopping"></i> Purchased: Sony WH-1000XM5</div>
+          ))}
+        </div>
+
+        <div className="review-box-container">
+          <div className="review-box-header">
+            <h3>Leave a Review</h3>
+            <p>We value your feedback. Let us know how we did!</p>
           </div>
-          <div className="testimonial-card">
-            <div className="testimonial-top">
-              <div className="avatar">MT</div>
-              <div><strong>Michael T.</strong><span className="verified-badge"><i className="fa-solid fa-circle-check"></i> Verified</span></div>
-              <div className="stars" style={{ marginLeft: 'auto' }}><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-regular fa-star"></i></div>
+          <form className="review-form" onSubmit={handleReviewSubmit}>
+            <div className="form-group">
+              <label>Your Name</label>
+              <input type="text" placeholder="John Doe" required value={reviewName} onChange={e => setReviewName(e.target.value)} />
             </div>
-            <p>"Fast shipping and the smartwatch I ordered looks even better in person. The build quality feels super premium for this price."</p>
-            <div className="testimonial-product-tag"><i className="fa-solid fa-bag-shopping"></i> Purchased: Apple Watch Ultra</div>
-          </div>
-          <div className="testimonial-card">
-            <div className="testimonial-top">
-              <div className="avatar">ER</div>
-              <div><strong>Emily R.</strong><span className="verified-badge"><i className="fa-solid fa-circle-check"></i> Verified</span></div>
-              <div className="stars" style={{ marginLeft: 'auto' }}><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i></div>
+            <div className="form-group">
+              <label>Rating</label>
+              <select required value={reviewRating} onChange={e => setReviewRating(e.target.value)}>
+                <option value="5">5 Stars - Excellent</option>
+                <option value="4">4 Stars - Very Good</option>
+                <option value="3">3 Stars - Average</option>
+                <option value="2">2 Stars - Poor</option>
+                <option value="1">1 Star - Terrible</option>
+              </select>
             </div>
-            <p>"I've bought my entire desk setup here — monitor stand, hub, keyboard. The minimalist aesthetic is exactly what I was after!"</p>
-            <div className="testimonial-product-tag"><i className="fa-solid fa-bag-shopping"></i> Purchased: Desk Accessories Bundle</div>
-          </div>
-          <div className="testimonial-card">
-            <div className="testimonial-top">
-              <div className="avatar">AK</div>
-              <div><strong>Arjun K.</strong><span className="verified-badge"><i className="fa-solid fa-circle-check"></i> Verified</span></div>
-              <div className="stars" style={{ marginLeft: 'auto' }}><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i></div>
+            <div className="form-group">
+              <label>Your Review</label>
+              <textarea rows="4" placeholder="Share your experience..." required value={reviewText} onChange={e => setReviewText(e.target.value)}></textarea>
             </div>
-            <p>"Ordered gaming gear for my setup and could not be happier. The mechanical keyboard has a perfect tactile feel and looks stunning with RGB lighting."</p>
-            <div className="testimonial-product-tag"><i className="fa-solid fa-bag-shopping"></i> Purchased: Mechanical Keyboard Pro</div>
-          </div>
-          <div className="testimonial-card">
-            <div className="testimonial-top">
-              <div className="avatar">NM</div>
-              <div><strong>Neha M.</strong><span className="verified-badge"><i className="fa-solid fa-circle-check"></i> Verified</span></div>
-              <div className="stars" style={{ marginLeft: 'auto' }}><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i></div>
-            </div>
-            <p>"The return process was seamless when I needed a different cable size. Support was responsive and friendly. Will definitely order again!"</p>
-            <div className="testimonial-product-tag"><i className="fa-solid fa-bag-shopping"></i> Purchased: USB-C Hub</div>
-          </div>
-          <div className="testimonial-card">
-            <div className="testimonial-top">
-              <div className="avatar">RS</div>
-              <div><strong>Rahul S.</strong><span className="verified-badge"><i className="fa-solid fa-circle-check"></i> Verified</span></div>
-              <div className="stars" style={{ marginLeft: 'auto' }}><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-solid fa-star"></i><i className="fa-regular fa-star"></i></div>
-            </div>
-            <p>"Honestly surprised at how good the packaging was. The product came wrapped beautifully — felt like opening a gift. Great first experience!"</p>
-            <div className="testimonial-product-tag"><i className="fa-solid fa-bag-shopping"></i> Purchased: TWS Earbuds Pro</div>
-          </div>
+            <button type="submit" className="btn btn-primary">Submit Review</button>
+          </form>
         </div>
       </section>
 
